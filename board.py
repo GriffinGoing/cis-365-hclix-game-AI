@@ -13,7 +13,7 @@ class walls(Enum):
 class node:
     def __init__(self, name,terrain, adjacentTo, walls):
         self.name = name
-        self.type = terrain
+        self.terrain = terrain
         self.adjacentTo = adjacentTo
         self.walls = walls
 
@@ -26,13 +26,8 @@ def buildGraph():
     for col in range(cols):
         for row in range(rows):
             nodeName = letters[col] + str(row+1)
-            graph[col][row] = node(nodeName,None,0,0)
+            graph[col][row] = node(nodeName,'normal',0,0)
 
-            
-            
-            
-    #Calculates each nodes adjacent node
-    #will later include wall checking and if a wall exists on possible adjacent nodes dont add them
     for col in range(cols):
         for row in range(rows):
             adjacent = []
@@ -49,20 +44,38 @@ def buildGraph():
 
 
 
+def addTerrain():
+    for col in range(0,3):
+        for row in range(0,3):
+            graph[col][row].terrain = 'start'
+            graph[col+13][row].terrain = 'start'
+            graph[col+13][row+13].terrain = 'start'
+            graph[col][row+13].terrain = 'start'
+
+    for col in range(4,7):
+        graph[col][0].terrain = 'water'
+        graph[col+5][0].terrain = 'water'
+    graph[6][1].terrain = 'water'
+    graph[9][1].terrain = 'water'
+    for col in range(6,10):
+        graph[col][2].terrain = 'water'
+    graph[7][5].terrain = 'water'
+    for col in range(6,10):
+        for row in range(6,10):
 
 
-#building board
+
 buildGraph()
+addTerrain()
 
-
-#some testing to see if all the adjacent nodes were corrent
 for i in range(cols):
     for j in range(rows):
         print(graph[i][j].name,end='->')
         node = graph[i][j]
         for k in node.adjacentTo:
             print(k.name,end=', ')
-        print()
+        print('     ' + node.terrain)
+
 
 
 
