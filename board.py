@@ -72,13 +72,22 @@ def addTerrain():
         for row in range(6,10):
           continue
 
+def addWalls():
+    for row in range(4, 8):
+        temp = graph[1][row]
+        temp.walls[directions.EAST] = True
+        temp = graph[2][row]
+        temp.walls[directions.WEST] = True
+
 
 
 buildGraph()
 addTerrain()
+addWalls()
 
 for i in range(cols):
     for j in range(rows):
+        print("Row: " + str(j) + "   Col:" + str(i))
         print(graph[i][j].name,end='->')
         node = graph[i][j]
         for k in node.adjacentTo:
