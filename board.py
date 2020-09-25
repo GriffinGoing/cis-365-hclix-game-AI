@@ -4,18 +4,26 @@ from enum import Enum
 rows, cols = (16, 16)
 graph = [[0 for i in range(cols)] for j in range(rows)]
 
-class walls(Enum):
-    n = 0
-    e = 1
-    s = 2
-    w = 3
+class directions(Enum):
+    NORTH = 0
+    EAST = 1
+    SOUTH =2
+    WEST = 3
+
+    def interpet(self):
+        return 0
 
 class node:
-    def __init__(self, name,terrain, adjacentTo, walls):
+    def __init__(self, name,terrain, adjacentTo, northWall = False, eastWall = False, southWall = False, westWall = False):
         self.name = name
         self.terrain = terrain
         self.adjacentTo = adjacentTo
-        self.walls = walls
+        self.walls = {
+            directions.NORTH: northWall,
+            directions.EAST: eastWall,
+            directions.SOUTH: southWall,
+            directions.WEST: westWall,
+        }
 
 
 def buildGraph():
@@ -26,7 +34,7 @@ def buildGraph():
     for col in range(cols):
         for row in range(rows):
             nodeName = letters[col] + str(row+1)
-            graph[col][row] = node(nodeName,'normal',0,0)
+            graph[col][row] = node(nodeName,'normal',0)
 
     for col in range(cols):
         for row in range(rows):
@@ -62,6 +70,7 @@ def addTerrain():
     graph[7][5].terrain = 'water'
     for col in range(6,10):
         for row in range(6,10):
+          continue
 
 
 
@@ -73,8 +82,9 @@ for i in range(cols):
         print(graph[i][j].name,end='->')
         node = graph[i][j]
         for k in node.adjacentTo:
-            print(k.name,end=', ')
+          print(k.name,end=', ')
         print('     ' + node.terrain)
+        print('     ' + str(node.walls))
 
 
 
