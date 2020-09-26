@@ -280,13 +280,14 @@ def addWalls():
 
 def removeWallAdjacencies():
 
-    removeNE = False
-    removeNW = False
-    removeSE = False
-    removeSW = False
+
 
     for col in range(cols):
         for row in range(rows):
+            removeNE = False
+            removeNW = False
+            removeSE = False
+            removeSW = False
             temp = graph[col][row]
 
             #north, nw, ne, and double-north-wall adjacencies
@@ -314,53 +315,61 @@ def removeWallAdjacencies():
                 #sw corner
                 removeSW = (temp.walls[directions.WEST] and col > 0) or (col > 0 and graph[col - 1][row].walls[directions.SOUTH])
 
-                #east and double-east-walls
-                if (temp.walls[directions.EAST] and col < 15):
-                    # print(graph[col][row-1].name)
-                    nodeToRemove = graph[col+1][row]
-                    temp.adjacentTo.remove(nodeToRemove)
+            '''
+            Ayden: You had all the stuff below within the south,sw,se, etc if statement check and it
+            wasnt removing some of the correct nodes, I think i fixed it without breaking anything?
+            '''
 
-                    #ne
-                    if (row > 0 and graph[col][row-1].walls[directions.EAST]):
-                        removeNE = True
+            #east and double-east-walls
+            if (temp.walls[directions.EAST] and col < 15):
+                # print(graph[col][row-1].name)
+                nodeToRemove = graph[col+1][row]
+                temp.adjacentTo.remove(nodeToRemove)
 
-                    #se
-                    if (row < 15 and graph[col][row+1].walls[directions.EAST]):
-                        removeSE = True
+                #ne
+                if (row > 0 and graph[col][row-1].walls[directions.EAST]):
+                    removeNE = True
 
-                #west and double-west-walls
-                if (temp.walls[directions.WEST] and col > 0):
-                    # print(graph[col][row-1].name)
-                    nodeToRemove = graph[col-1][row]
-                    temp.adjacentTo.remove(nodeToRemove)
+                #se
+                if (row < 15 and graph[col][row+1].walls[directions.EAST]):
+                    removeSE = True
 
-                    # nw
-                    if (row > 0 and graph[col][row - 1].walls[directions.WEST]):
-                        removeNW = True
+            #west and double-west-walls
+            if (temp.walls[directions.WEST] and col > 0):
+                # print(graph[col][row-1].name)
+                nodeToRemove = graph[col-1][row]
+                temp.adjacentTo.remove(nodeToRemove)
 
-                    # sw
-                    if (row < 15 and graph[col][row + 1].walls[directions.WEST]):
-                        removeSW = True
+                # nw
+                if (row > 0 and graph[col][row - 1].walls[directions.WEST]):
+                    removeNW = True
 
-                #remove NE
-                if (removeNE):
-                    nodeToRemove = graph[col+1][row-1]
-                    temp.adjacentTo.remove(nodeToRemove)
+                # sw
+                if (row < 15 and graph[col][row + 1].walls[directions.WEST]):
+                    removeSW = True
 
-                #remove NW
-                if (removeNW):
-                    nodeToRemove = graph[col - 1][row - 1]
-                    temp.adjacentTo.remove(nodeToRemove)
 
-                #remove SE
-                if (removeSE):
-                    nodeToRemove = graph[col + 1][row + 1]
-                    temp.adjacentTo.remove(nodeToRemove)
+            #remove NE
+            if (removeNE):
+                nodeToRemove = graph[col+1][row-1]
+                temp.adjacentTo.remove(nodeToRemove)
 
-                #remove SW
-                if (removeSW):
-                    nodeToRemove = graph[col-1][row+1]
-                    temp.adjacentTo.remove(nodeToRemove)
+            #remove NW
+            if (removeNW):
+                nodeToRemove = graph[col - 1][row - 1]
+                temp.adjacentTo.remove(nodeToRemove)
+
+            #remove SE
+            if (removeSE):
+                nodeToRemove = graph[col + 1][row + 1]
+                temp.adjacentTo.remove(nodeToRemove)
+
+            #remove SW
+            if (removeSW):
+                nodeToRemove = graph[col-1][row+1]
+                temp.adjacentTo.remove(nodeToRemove)
+
+
 
 
 
@@ -374,13 +383,7 @@ def printAdj(col, row):
 
 
 # Nothing but side effects, baby. Quality programming here.
-buildGraph()
-addTerrain()
-addWalls()
 
-printAdj(1, 9)
-removeWallAdjacencies()
-printAdj(1, 9)
 
 '''
 for i in range(cols):
@@ -395,5 +398,12 @@ for i in range(cols):
 '''
 
 
+def main():
+    buildGraph()
+    addWalls()
+    removeWallAdjacencies()
 
+    return graph
+
+main()
 
