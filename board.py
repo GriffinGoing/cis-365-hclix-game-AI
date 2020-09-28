@@ -280,10 +280,13 @@ def addWalls():
     #four squares in the middle
     graph[7][7].walls[directions.NORTH] = True
     graph[7][7].walls[directions.WEST] = True
+
     graph[8][7].walls[directions.NORTH] = True
     graph[8][7].walls[directions.EAST] = True
+
     graph[7][8].walls[directions.SOUTH] = True
     graph[7][8].walls[directions.WEST] = True
+
     graph[8][8].walls[directions.SOUTH] = True
     graph[8][8].walls[directions.EAST] = True
 def removeWallAdjacencies():
@@ -376,11 +379,14 @@ def removeWallAdjacencies():
             if (removeSW):
                 nodeToRemove = graph[col-1][row+1]
                 temp.adjacentTo.remove(nodeToRemove)
-    for c in range(cols):
-        for r in range(rows):
-            for nodes in graph[c][r].adjacentTo:
-                if nodes.adjacentTo.count(graph[c][r]) == 0:
-                    graph[c][r].adjacentTo.remove(nodes)
+    for c in range(0,16):
+        for r in range(0,16):
+            temp = graph[c][r]
+            clone = graph[c][r].adjacentTo[:]
+            for nodes in clone:
+                if nodes.adjacentTo.count(temp) == 0:
+                    temp.adjacentTo.remove(nodes)
+
 
 
 
