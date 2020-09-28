@@ -28,11 +28,12 @@ def AStarAlgo(start,end):
             min = 500
             minNode = 0;
             for node in G.adjacentTo:
-                nodeX = abs((ord(node.name[0]) - 97) - (ord(end[0]) - 97))
-                nodeY = abs((int(node.name[1:len(node.name)])-1) - (int(end[1:len(end)])-1))
+                nodeX = abs((ord(node.name[0]) - 97) - (ord(end[0]) - 97)) * 1.5
+                nodeY = abs((int(node.name[1:len(node.name)])-1) - (int(end[1:len(end)])-1)) * 1.5
                 distance = (nodeX) + (nodeY)
                 futureNode = nextNodeWeight(node,endNode.name)
-                weight = distance - (len(node.adjacentTo)/4)
+                weight = distance - (len(node.adjacentTo)/2)
+
                 if futureNode > weight:
                     weight = 499
                 if futureNode == 0:
@@ -46,7 +47,7 @@ def AStarAlgo(start,end):
             if(minNode != 0):
                 Q.append(minNode)
 
-    return Path
+    return False
 
 def nextNodeWeight(rootNode, end):
     weight = 100
@@ -81,6 +82,39 @@ To add test cases do:
 '''
 
 path = AStarAlgo('a1','p16')
+print()
+print()
+print('Path =       A1 to P16')
+if path != False:
+    count = 0
+    for i in path:
+        print(i.name,end='->')
+        count += 1
+        if count > 10:
+            print()
+            count = 0
+else:
+    print('your algo sucks or your input sucks')
+
+path = AStarAlgo('a9','p9')
+print()
+print()
+print('Path =       A9 to P9')
+if path != False:
+    count = 0
+    for i in path:
+        print(i.name,end='->')
+        count += 1
+        if count > 10:
+            print()
+            count = 0
+else:
+    print('your algo sucks or your input sucks')
+
+print()
+print()
+path = AStarAlgo('c3','j10')
+print('Path =       C3 to J10')
 if path != False:
     count = 0
     for i in path:
