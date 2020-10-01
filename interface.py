@@ -43,13 +43,15 @@ class gameGUI:
                 node = board[col][row]
                 newButton = Button(master,text=(node.name.upper()), highlightcolor='pale green', justify=CENTER, width = 5, height=2)
 
-                if (node.terrain == "water"):
+                if(node.terrain == "normal"):
+                    newButton.config(bg='white')
+                elif (node.terrain == "water"):
                     newButton.config(bg='blue')
                 elif (node.terrain == "start"):
                     newButton.config(bg='tomato')
 
-                newButton.bind("<ButtonPress-1>", onHover)
-                newButton.bind("<ButtonRelease-1>", exitHover)
+                newButton.bind("<Enter>", onHover)
+                newButton.bind("<Leave>", exitHover)
                 self.buttons.append(newButton)
                 newButton.grid(row=row, column=col, padx=2, pady=2)
 
