@@ -1,5 +1,6 @@
 from tkinter import *
 import tkinter.font as tkFont
+from tkinter import simpledialog
 sys.path.append('..')
 import board
 from board import directions
@@ -33,7 +34,7 @@ class boardGUI:
         #master.title("HeroClix Interface")
 
         self.blackBoxes = []
-        self.buttons = []
+        self.buttons = {}
 
         self.numRows = 16
         self.numCols = 16
@@ -61,9 +62,9 @@ class boardGUI:
                 elif (node.terrain == "start"):
                     newButton.config(bg='tomato')
 
-                newButton.bind("<Enter>", onHover)
-                newButton.bind("<Leave>", exitHover)
-                self.buttons.append(newButton)
+                #newButton.bind("<Enter>", onHover)
+                #newButton.bind("<Leave>", exitHover)
+                self.buttons[node.name] = newButton
                 newButton.grid(row=row, column=col, padx=2, pady=2)
 
 
@@ -123,13 +124,28 @@ def exitHover(event):
     else:
         i.config(bg='white')
 
+def moveCharacter(character, boardGui):
 
+    # remove old board image
+
+    # update actual char position
+    charName = character.getCharacter()['name']
+    newPosition = simpledialog.askstring("Move Character", "Enter the position to move " + charName + " to")
+    print("Moving " + charName + " to " + newPosition)
+    character.setPosition(newPosition)
+    #print(character.getCharacter()['position'])
+
+    # add new image to board
+    print(boardGui.buttons[newPosition].winfo_width(), boardGui.buttons[newPosition].winfo_height())
+    boardGui.buttons[newPosition].config(image=character.getCharacter()['thumbnail'])
+
+    return
 
 def main():
 
     root = Tk()
 
-    root.minsize(1600, 1300)
+    #root.minsize(1600, 1300)
 
     font = tkFont.Font(family="Helvetica",size=8)
     root.option_add("*Font", font)
@@ -147,8 +163,13 @@ def main():
     testp2Label = Label(player2LabelFrame, text="IM A TEST SHIT THING")
 
     p1CaptAmerica = characterGUI(player1LabelFrame, 1, "Captain America",)
+    p1CaptAmerica.moveButton.config(command=lambda character=p1CaptAmerica, boardGui=my_gui : moveCharacter(character, boardGui))
+
     p1Thor = characterGUI(player1LabelFrame, 1, "Thor",)
+    p1Thor.moveButton.config(command=lambda character=p1Thor, boardGui=my_gui : moveCharacter(character, boardGui))
+
     p1IronMan = characterGUI(player1LabelFrame, 1, "Iron Man",)
+    p1IronMan.moveButton.config(command=lambda character=p1IronMan, boardGui=my_gui : moveCharacter(character, boardGui))
 
     player1Chars = {
         "Captain America": p1CaptAmerica.getCharacter,
@@ -157,8 +178,13 @@ def main():
     }
 
     p2CaptAmerica = characterGUI(player2LabelFrame, 2, "Captain America",)
+    p2CaptAmerica.moveButton.config(command=lambda character=p2CaptAmerica, boardGui=my_gui : moveCharacter(character, boardGui))
+
     p2Thor = characterGUI(player2LabelFrame, 2, "Thor",)
+    p2Thor.moveButton.config(command=lambda character=p2Thor, boardGui=my_gui : moveCharacter(character, boardGui))
+
     p2IronMan = characterGUI(player2LabelFrame, 2, "Iron Man",)
+    p2IronMan.moveButton.config(command=lambda character=p2IronMan, boardGui=my_gui : moveCharacter(character, boardGui))
 
     player2Chars = {
         "Captain America": p2CaptAmerica,
@@ -173,7 +199,7 @@ def main():
     canvas.grid(row=0, column=1)
     my_gui.addWalls(board, canvas)
 
-    print(root.winfo_width(), root.winfo_height())
+    #print(root.winfo_width(), root.winfo_height())
 
     root.mainloop()
     #player1Window.mainloop()

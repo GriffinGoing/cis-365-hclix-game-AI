@@ -12,6 +12,7 @@ captAmericaTemplate = {
         1: "./images/p1CaptainAmerica.jpg",
         2: "./images/p2CaptainAmerica.jpg",
     },
+    "position": "A1",
     "keywords": ["Avengers", "S.H.I.E.L.D.", "Solder"],
     "canFly": False,
     "life": 6,
@@ -74,6 +75,7 @@ thorTemplate = {
         1: "./images/p1Thor.jpg",
         2: "./images/p2Thor.jpg",
     },
+    "position": "A1",
     "keywords": ["Avengers", "Asgardian", "Deity"],
     "canFly": True,
     "life": 9,
@@ -135,6 +137,7 @@ ironManTemplate = {
         1: "./images/p1IronMan.jpg",
         2: "./images/p2IronMan.jpg",
     },
+    "position": "A1",
     "keywords": ["Avengers", "Stark Industries", "Armor"],
     "canFly": True,
     "life": 7,
@@ -216,12 +219,14 @@ class characterGUI():
         self.character['defenseAbility'] = self.character['defenseAbilityVals'][1]
         self.character['damageAbility'] = self.character['damageAbilityVals'][1]
 
-
         # named frame to hold char interface
         self.charLabelFrame = LabelFrame(master, text=self.character['name'])
 
         # frame to pic and name
         self.picFrame = Frame(self.charLabelFrame)
+
+        # move button
+        self.moveButton = Button(self.charLabelFrame, text="Move")
 
         # frame for clicker
         self.clickerFrame = Frame(self.charLabelFrame)
@@ -233,6 +238,7 @@ class characterGUI():
         self.attrFrame.grid_propagate(False)
 
         # load and size char image
+        self.character['thumbnail'] = ImageTk.PhotoImage(Image.open(self.character['image']).resize((58, 48)), Image.ANTIALIAS)
         self.charImg = ImageTk.PhotoImage(Image.open(self.character['image']).resize((100, 100)), Image.ANTIALIAS)
         self.image = Label(self.picFrame, image=self.charImg)
 
@@ -316,11 +322,12 @@ class characterGUI():
 
         self.picFrame.pack()
         self.traitVal.pack()
+        self.moveButton.pack()
         self.clickerFrame.pack()
         self.attrFrame.pack()
         #self.attrFrame.grid_propagate(0)
 
-        print(self.attrFrame.winfo_width(), self.attrFrame.winfo_height())
+        #print(self.attrFrame.winfo_width(), self.attrFrame.winfo_height())
 
         self.charLabelFrame.pack()
 
@@ -357,5 +364,8 @@ class characterGUI():
 
     def getCharacter(self):
         return self.character
+
+    def setPosition(self, newPosition):
+        self.character['position'] = newPosition
 
 
