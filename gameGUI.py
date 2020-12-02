@@ -126,24 +126,15 @@ def exitHover(event):
 
 def moveCharacter(character, boardGui):
 
-
+    letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p']
 
     # update actual char position
     charName = character.getCharacter()['name']
+    oldPosition = character.getCharacter()['position'].lower()
     newPosition = simpledialog.askstring("Move Character", "Enter the position to move " + charName + " to").lower()
     print("Moving " + charName + " to " + newPosition)
-    character.setPosition(newPosition)
-    #print(character.getCharacter()['position'])
 
-    oldPosition = character.getCharacter()['position'].lower()
-
-    # remove old board image
-    width = boardGui.buttons[oldPosition].winfo_width()
-    height = boardGui.buttons[oldPosition].winfo_height()
-    print(boardGui.buttons[oldPosition].winfo_width(), boardGui.buttons[oldPosition].winfo_height())
-    boardGui.buttons[oldPosition].config(text=oldPosition.upper(), image='', width=34, height=38)
-    #boardGui.buttons[oldPosition].grid(row=0, column=0)
-    print(boardGui.buttons[oldPosition].winfo_width(), boardGui.buttons[oldPosition].winfo_height())
+    boardGui.buttons[oldPosition].config(image='', width=5, height=2)
 
     # add new image to board
     width = boardGui.buttons[newPosition].winfo_width()
@@ -151,6 +142,9 @@ def moveCharacter(character, boardGui):
     print(boardGui.buttons[newPosition].winfo_width(), boardGui.buttons[newPosition].winfo_height())
     boardGui.buttons[newPosition].config(image=character.getCharacter()['thumbnail'], width=width-6, height=height-6)
     print(boardGui.buttons[newPosition].winfo_width(), boardGui.buttons[newPosition].winfo_height())
+
+    # set char position
+    character.setPosition(newPosition)
 
 
     return

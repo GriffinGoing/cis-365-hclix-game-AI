@@ -225,8 +225,11 @@ class characterGUI():
         # frame to pic and name
         self.picFrame = Frame(self.charLabelFrame)
 
-        # move button
-        self.moveButton = Button(self.charLabelFrame, text="Move")
+        # move frame and button and position
+        self.moveFrame = Frame(self.charLabelFrame)
+        self.posLabel = Label(self.moveFrame, text="Position:")
+        self.posVal = Label(self.moveFrame, text=self.character['position'])
+        self.moveButton = Button(self.moveFrame, text="Move")
 
         # frame for clicker
         self.clickerFrame = Frame(self.charLabelFrame)
@@ -320,9 +323,13 @@ class characterGUI():
         self.specialLabel.grid(row=5, column=0)
         self.specialVal.grid(row=5, column=1)
 
+        self.posLabel.grid(row=0, column=0)
+        self.posVal.grid(row=0, column=1)
+        self.moveButton.grid(row=0, column=2)
+
         self.picFrame.pack()
         self.traitVal.pack()
-        self.moveButton.pack()
+        self.moveFrame.pack()
         self.clickerFrame.pack()
         self.attrFrame.pack()
         #self.attrFrame.grid_propagate(0)
@@ -366,6 +373,8 @@ class characterGUI():
         return self.character
 
     def setPosition(self, newPosition):
-        self.character['position'] = newPosition
+        self.character['position'] = newPosition.upper()
+        self.posVal.config(text=self.character['position'])
+
 
 
