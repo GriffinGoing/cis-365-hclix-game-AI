@@ -146,9 +146,21 @@ p1CaptAmerica = characterGUI(player1LabelFrame, 1, "Captain America",)
 p1Thor = characterGUI(player1LabelFrame, 1, "Thor",)
 p1IronMan = characterGUI(player1LabelFrame, 1, "Iron Man",)
 
+player1Chars = {
+    "Captain America": p1CaptAmerica,
+    "Thor": p1Thor,
+    "Iron Man": p1IronMan
+}
+
 p2CaptAmerica = characterGUI(player2LabelFrame, 2, "Captain America",)
 p2Thor = characterGUI(player2LabelFrame, 2, "Thor",)
 p2IronMan = characterGUI(player2LabelFrame, 2, "Iron Man",)
+
+player2Chars = {
+    "Captain America": p2CaptAmerica,
+    "Thor": p2Thor,
+    "Iron Man": p2IronMan
+}
 
 
 
