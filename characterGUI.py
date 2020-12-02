@@ -238,7 +238,7 @@ class characterGUI():
         self.attrFrame.grid_propagate(False)
 
         # load and size char image
-        self.character['thumbnail'] = ImageTk.PhotoImage(Image.open(self.character['image']).resize((58, 48)), Image.ANTIALIAS)
+        self.character['thumbnail'] = ImageTk.PhotoImage(Image.open(self.character['image']).resize((25, 25)), Image.ANTIALIAS)
         self.charImg = ImageTk.PhotoImage(Image.open(self.character['image']).resize((100, 100)), Image.ANTIALIAS)
         self.image = Label(self.picFrame, image=self.charImg)
 

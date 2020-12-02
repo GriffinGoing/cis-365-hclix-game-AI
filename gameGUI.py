@@ -53,7 +53,7 @@ class boardGUI:
         for row in range(self.numRows):
             for col in range(self.numCols):
                 node = board[col][row]
-                newButton = Button(master,text=(node.name.upper()), highlightcolor='pale green', justify=CENTER, width = 5, height=2)
+                newButton = Button(master,text=(node.name.upper()), justify=CENTER, width = 5, height=2)
 
                 if(node.terrain == "normal"):
                     newButton.config(bg='white')
@@ -126,18 +126,32 @@ def exitHover(event):
 
 def moveCharacter(character, boardGui):
 
-    # remove old board image
+
 
     # update actual char position
     charName = character.getCharacter()['name']
-    newPosition = simpledialog.askstring("Move Character", "Enter the position to move " + charName + " to")
+    newPosition = simpledialog.askstring("Move Character", "Enter the position to move " + charName + " to").lower()
     print("Moving " + charName + " to " + newPosition)
     character.setPosition(newPosition)
     #print(character.getCharacter()['position'])
 
+    oldPosition = character.getCharacter()['position'].lower()
+
+    # remove old board image
+    width = boardGui.buttons[oldPosition].winfo_width()
+    height = boardGui.buttons[oldPosition].winfo_height()
+    print(boardGui.buttons[oldPosition].winfo_width(), boardGui.buttons[oldPosition].winfo_height())
+    boardGui.buttons[oldPosition].config(text=oldPosition.upper(), image='', width=34, height=38)
+    #boardGui.buttons[oldPosition].grid(row=0, column=0)
+    print(boardGui.buttons[oldPosition].winfo_width(), boardGui.buttons[oldPosition].winfo_height())
+
     # add new image to board
+    width = boardGui.buttons[newPosition].winfo_width()
+    height = boardGui.buttons[newPosition].winfo_height()
     print(boardGui.buttons[newPosition].winfo_width(), boardGui.buttons[newPosition].winfo_height())
-    boardGui.buttons[newPosition].config(image=character.getCharacter()['thumbnail'])
+    boardGui.buttons[newPosition].config(image=character.getCharacter()['thumbnail'], width=width-6, height=height-6)
+    print(boardGui.buttons[newPosition].winfo_width(), boardGui.buttons[newPosition].winfo_height())
+
 
     return
 
