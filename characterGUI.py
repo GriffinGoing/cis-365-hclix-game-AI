@@ -8,12 +8,15 @@ Character attributes/abilities/image/etc
 
 captAmericaTemplate = {
     "name": "Captain America",
-    "image": "./images/captainAmerica.jpg",
+    "image": {
+        1: "./images/p1CaptainAmerica.jpg",
+        2: "./images/p2CaptainAmerica.jpg",
+    },
     "keywords": ["Avengers", "S.H.I.E.L.D.", "Solder"],
     "canFly": False,
     "life": 6,
     "deadAt": 7,
-    "Special": "Shield Up!",
+    "special": "Shield Up!",
     "speedVals": {
         **dict.fromkeys([1], 8),
         **dict.fromkeys([2, 3], 7),
@@ -47,12 +50,15 @@ captAmericaTemplate = {
 
 thorTemplate = {
     "name": "Thor",
-    "image": "./images/thor.jpg",
+    "image": {
+        1: "./images/p1Thor.jpg",
+        2: "./images/p2Thor.jpg",
+    },
     "keywords": ["Avengers", "Asgardian", "Deity"],
     "canFly": True,
     "life": 9,
     "deadAt": 10,
-    "Special": "Quake",
+    "special": "Quake",
     "speedVals": {
         **dict.fromkeys([1, 2, 3, 4, 5, 6], 10),
         **dict.fromkeys([7, 8, 9], 9),
@@ -83,12 +89,15 @@ thorTemplate = {
 
 ironManTemplate = {
     "name": "Iron Man",
-    "image": "./images/ironMan.jpg",
+    "image": {
+        1: "./images/p1IronMan.jpg",
+        2: "./images/p2IronMan.jpg",
+    },
     "keywords": ["Avengers", "Stark Industries", "Armor"],
     "canFly": True,
     "life": 7,
     "deadAt": 8,
-    "Special": "None",
+    "special": "None",
     "speedVals": {
         **dict.fromkeys([1, 2, 3], 10),
         **dict.fromkeys([4, 5], 9),
@@ -125,9 +134,12 @@ characters = {
 }
 
 class characterGUI():
-    def __init__(self, master, character):
+    def __init__(self, master, playerNum, character):
         # copy character template
         self.character = characters[character].copy()
+
+        # load proper image
+        self.character['image'] = self.character['image'][playerNum]
 
         # add 'current' attribute keys and values to character
         self.character['speed'] = self.character['speedVals'][1]
@@ -146,6 +158,9 @@ class characterGUI():
 
         # character name
         self.nameLabel = Label(self.charLabelFrame, text=self.character['name'])
+
+        self.traitLabel = Label(self.charLabelFrame, text="Traits:")
+        self.traitVal = Label(self.charLabelFrame, text=", ".join(self.character['keywords']))
 
         # scale/slider for selection of "clicker" value
         self.clickerLabel = Label(self.charLabelFrame, text="Clicker Position:")
@@ -171,27 +186,37 @@ class characterGUI():
         self.damageLabel = Label(self.charLabelFrame, text="Damage:")
         self.damageVal = Label(self.charLabelFrame, text=self.character['damage'])
 
+        # special ability
+        self.specialLabel = Label(self.charLabelFrame, text="Special:")
+        self.specialVal = Label(self.charLabelFrame, text=self.character['special'])
+
         self.nameLabel.grid(row=0, column=1)
         self.image.grid(row=0, column=0)
 
+        #   self.traitLabel.grid(row=1, column=0)
+        self.traitVal.grid(row=1, column=1)
 
-        self.clickerLabel.grid(row=1, column=0)
-        self.clickerSlider.grid(row=1, column=1)
 
-        self.speedLabel.grid(row=2, column=0)
-        self.speedVal.grid(row=2, column=1)
+        self.clickerLabel.grid(row=2, column=0)
+        self.clickerSlider.grid(row=2, column=1)
 
-        self.attackLabel.grid(row=3, column=0)
-        self.attackVal.grid(row=3, column=1)
+        self.speedLabel.grid(row=3, column=0)
+        self.speedVal.grid(row=3, column=1)
 
-        self.rangeLabel.grid(row=4, column=0)
-        self.rangeVal.grid(row=4, column=1)
+        self.attackLabel.grid(row=4, column=0)
+        self.attackVal.grid(row=4, column=1)
 
-        self.defenseLabel.grid(row=5, column=0)
-        self.defenseVal.grid(row=5, column=1)
+        self.rangeLabel.grid(row=5, column=0)
+        self.rangeVal.grid(row=5, column=1)
 
-        self.damageLabel.grid(row=6, column=0)
-        self.damageVal.grid(row=6, column=1)
+        self.defenseLabel.grid(row=6, column=0)
+        self.defenseVal.grid(row=6, column=1)
+
+        self.damageLabel.grid(row=7, column=0)
+        self.damageVal.grid(row=7, column=1)
+
+        self.specialLabel.grid(row=8, column=0)
+        self.specialVal.grid(row=8, column=1)
 
         self.charLabelFrame.pack()
 

@@ -142,13 +142,13 @@ my_gui = boardGUI(canvas, board)
 testp1Label = Label(player1LabelFrame, text="IM A TEST SHIT THING")
 testp2Label = Label(player2LabelFrame, text="IM A TEST SHIT THING")
 
-p1CaptAmerica = characterGUI(player1LabelFrame, "Captain America",)
-p1Thor = characterGUI(player1LabelFrame, "Thor",)
-p1IronMan = characterGUI(player1LabelFrame, "Iron Man",)
+p1CaptAmerica = characterGUI(player1LabelFrame, 1, "Captain America",)
+p1Thor = characterGUI(player1LabelFrame, 1, "Thor",)
+p1IronMan = characterGUI(player1LabelFrame, 1, "Iron Man",)
 
-p2CaptAmerica = characterGUI(player2LabelFrame, "Captain America",)
-p2Thor = characterGUI(player2LabelFrame, "Thor",)
-p2IronMan = characterGUI(player2LabelFrame, "Iron Man",)
+p2CaptAmerica = characterGUI(player2LabelFrame, 2, "Captain America",)
+p2Thor = characterGUI(player2LabelFrame, 2, "Thor",)
+p2IronMan = characterGUI(player2LabelFrame, 2, "Iron Man",)
 
 
 

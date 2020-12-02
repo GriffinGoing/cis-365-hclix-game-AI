@@ -289,9 +289,8 @@ def addWalls():
 
     graph[8][8].walls[directions.SOUTH] = True
     graph[8][8].walls[directions.EAST] = True
+
 def removeWallAdjacencies():
-
-
 
     for col in range(cols):
         for row in range(rows):
