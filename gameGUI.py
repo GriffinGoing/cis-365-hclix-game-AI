@@ -67,7 +67,7 @@ class boardGUI:
                 newButton.grid(row=row, column=col, padx=2, pady=2)
 
 
-    def addWalls(self,board):
+    def addWalls(self,board, canvas):
         canvas.update()
         nodeHeight = canvas.winfo_height()/16
         nodeWidth = canvas.winfo_width()/16
@@ -125,7 +125,7 @@ def exitHover(event):
 
 
 
-if __name__ =="__main__":
+def main():
     root = Tk()
 
 
@@ -163,14 +163,16 @@ if __name__ =="__main__":
         "Iron Man": p2IronMan
     }
 
-
-
     player1LabelFrame.grid(row=0,column=0)
     #testp1Label.pack()
     player2LabelFrame.grid(row=0,column=2)
     #testp2Label.pack()
     canvas.grid(row=0, column=1)
-    my_gui.addWalls(board)
+    my_gui.addWalls(board, canvas)
 
     root.mainloop()
     #player1Window.mainloop()
+
+
+if __name__ =="__main__":
+    main()
