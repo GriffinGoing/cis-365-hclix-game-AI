@@ -125,52 +125,52 @@ def exitHover(event):
 
 
 
-root = Tk()
+if __name__ =="__main__":
+    root = Tk()
 
 
-font = tkFont.Font(family="Helvetica",size=11)
-root.option_add("*Font", font)
-root.title("HeroClix AI Interface")
+    font = tkFont.Font(family="Helvetica",size=11)
+    root.option_add("*Font", font)
+    root.title("HeroClix AI Interface")
 
-canvas = Canvas(root, bg='white', height=300, width=300) # background or board
-player1LabelFrame = LabelFrame(root, text="Player 1")
-player2LabelFrame = LabelFrame(root, text="Player 2")
+    canvas = Canvas(root, bg='white', height=300, width=300) # background or board
+    player1LabelFrame = LabelFrame(root, text="Player 1")
+    player2LabelFrame = LabelFrame(root, text="Player 2")
 
-my_gui = boardGUI(canvas, board)
+    my_gui = boardGUI(canvas, board)
 
-# testing
-testp1Label = Label(player1LabelFrame, text="IM A TEST SHIT THING")
-testp2Label = Label(player2LabelFrame, text="IM A TEST SHIT THING")
+    # testing
+    testp1Label = Label(player1LabelFrame, text="IM A TEST SHIT THING")
+    testp2Label = Label(player2LabelFrame, text="IM A TEST SHIT THING")
 
-p1CaptAmerica = characterGUI(player1LabelFrame, 1, "Captain America",)
-p1Thor = characterGUI(player1LabelFrame, 1, "Thor",)
-p1IronMan = characterGUI(player1LabelFrame, 1, "Iron Man",)
+    p1CaptAmerica = characterGUI(player1LabelFrame, 1, "Captain America",)
+    p1Thor = characterGUI(player1LabelFrame, 1, "Thor",)
+    p1IronMan = characterGUI(player1LabelFrame, 1, "Iron Man",)
 
-player1Chars = {
-    "Captain America": p1CaptAmerica,
-    "Thor": p1Thor,
-    "Iron Man": p1IronMan
-}
+    player1Chars = {
+        "Captain America": p1CaptAmerica.getCharacter,
+        "Thor": p1Thor,
+        "Iron Man": p1IronMan
+    }
 
-p2CaptAmerica = characterGUI(player2LabelFrame, 2, "Captain America",)
-p2Thor = characterGUI(player2LabelFrame, 2, "Thor",)
-p2IronMan = characterGUI(player2LabelFrame, 2, "Iron Man",)
+    p2CaptAmerica = characterGUI(player2LabelFrame, 2, "Captain America",)
+    p2Thor = characterGUI(player2LabelFrame, 2, "Thor",)
+    p2IronMan = characterGUI(player2LabelFrame, 2, "Iron Man",)
 
-player2Chars = {
-    "Captain America": p2CaptAmerica,
-    "Thor": p2Thor,
-    "Iron Man": p2IronMan
-}
-
-
-
-player1LabelFrame.grid(row=0,column=0)
-#testp1Label.pack()
-player2LabelFrame.grid(row=0,column=2)
-#testp2Label.pack()
-canvas.grid(row=0, column=1)
-my_gui.addWalls(board)
+    player2Chars = {
+        "Captain America": p2CaptAmerica,
+        "Thor": p2Thor,
+        "Iron Man": p2IronMan
+    }
 
 
-root.mainloop()
-#player1Window.mainloop()
+
+    player1LabelFrame.grid(row=0,column=0)
+    #testp1Label.pack()
+    player2LabelFrame.grid(row=0,column=2)
+    #testp2Label.pack()
+    canvas.grid(row=0, column=1)
+    my_gui.addWalls(board)
+
+    root.mainloop()
+    #player1Window.mainloop()
