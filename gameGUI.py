@@ -126,16 +126,19 @@ def exitHover(event):
 
 
 def main():
+
     root = Tk()
 
+    root.minsize(1600, 1300)
 
-    font = tkFont.Font(family="Helvetica",size=11)
+    font = tkFont.Font(family="Helvetica",size=8)
     root.option_add("*Font", font)
     root.title("HeroClix AI Interface")
 
     canvas = Canvas(root, bg='white', height=300, width=300) # background or board
-    player1LabelFrame = LabelFrame(root, text="Player 1")
-    player2LabelFrame = LabelFrame(root, text="Player 2")
+    player1LabelFrame = LabelFrame(root, text="Player 1", width=300)
+    player2LabelFrame = LabelFrame(root, text="Player 2", width=300)
+    player1LabelFrame.grid_propagate(0)
 
     my_gui = boardGUI(canvas, board)
 
@@ -169,6 +172,8 @@ def main():
     #testp2Label.pack()
     canvas.grid(row=0, column=1)
     my_gui.addWalls(board, canvas)
+
+    print(root.winfo_width(), root.winfo_height())
 
     root.mainloop()
     #player1Window.mainloop()
