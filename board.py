@@ -68,9 +68,26 @@ def addTerrain():
     for col in range(6,10):
         graph[col][2].terrain = 'water'
     graph[7][5].terrain = 'water'
-    for col in range(6,10):
-        for row in range(6,10):
-          continue
+    for col in range(7,9):
+        for row in range(3,5):
+            graph[col][row].terrain = 'water'
+
+    for col in range(6,9):
+        graph[col][6].terrain = 'water'
+        graph[col+1][9].terrain = 'water'
+        graph[col+3][13].terrain = 'water'
+        graph[col-2][8].terrain = 'water'
+        graph[4][col+1].terrain = 'water'
+        graph[3][col+3].terrain = 'water'
+        graph[9][col+1].terrain = 'water'
+        graph[6][col].terrain = 'water'
+        graph[9][col+5].terrain = 'water'
+    graph[11][14].terrain = 'water'
+    graph[8][10].terrain = 'water'
+
+    for col in range(7,9):
+        graph[col][7].terrain = 'block'
+        graph[col][8].terrain = 'block'
 
 def addWalls():
     for row in range(4, 8):
@@ -429,6 +446,7 @@ def removeWall(col,row,wall):
     removeWallAdjacencies()
 
     return graph
+
 def addAdj(col,row):
     node = graph[col][row]
     if row > 0:
@@ -464,11 +482,12 @@ def addAdj(col,row):
                 if node not in graph[col + 1][row + 1].adjacentTo:
                     node.adjacentTo.append(graph[col + 1][row + 1])
                     graph[col + 1][row + 1].adjacentTo.append(node)
+
 def main():
     buildGraph()
     addTerrain()
     addWalls()
     removeWallAdjacencies()
-
+    return graph
 
 main()
