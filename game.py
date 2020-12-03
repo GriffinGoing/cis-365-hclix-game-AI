@@ -4,7 +4,6 @@ from random import randint
 from math import sqrt,pow,floor,ceil
 
 global currentPlayer
-global players
 
 letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'N', 'P']
 
@@ -14,7 +13,7 @@ class player():
         self.position = position
         self.points = 0
         self.starterArea = 0
-        self.characters = gameGUI.player1Chars
+        #self.characters = gameGUI.player1Chars
         self.enemyIndex = 2
 
 
@@ -25,9 +24,9 @@ class player():
         for i in self.characters:
             #here to show if the character has taken a costed action this move
             costedAction = False
-
             #Here to see if the character is allowed to do a double power this move
             DoublePower = False
+
             if i.actionToken == 0:
                 DoublePower = True
 
@@ -37,7 +36,7 @@ class player():
                 next(self.characters)
             #if Character didn't do an action last turn he loses 1 action token on this turn
             if i.didAction == False:
-                i.actionToken -= 1
+                i.actionToken = 0
             #if character has two action tokens they cannot do anything this turn
             if i.actionToken == 2:
                 next(self.characters)
@@ -45,14 +44,16 @@ class player():
             #characters x,y position
             pos = [letters.index[i.position[0]],int(i.position[1])-1]
 
-            enemyTarget = self.chooseTarget(i,graph)
-            self.move(i,pos,enemyTarget)
-            self.attack(i,enemyTarget)
-
-            #if character makes a costed action his action tokens go up by one
-            if costedAction == True:
+            actions,target = self.chooseTarget(i,graph)
+            print(actions)
+            if actions['cost'][0] == 'cost':
                 i.actionToken += 1
                 self.actionTotal -= 100
+
+            if actions['move'][0] == True:
+                self.move(i,target,actions['move'][1])
+            if actions['attack'][0] == True:
+                print('attack with ' + actions['attack'][1])
 
             #if the character is pushed then he always takes 1 click of damage
             if i.actionToken == 2:
@@ -62,11 +63,10 @@ class player():
             admitDefeat(self.position,self.points)
 
     # move and attack are in player class because only the player should move their pieces
-    def move(self,character,start,end):
-        moveLimit = self.characters[character].speedVal + 1
-
-        canGetThere,moves = Pathing.AStarAlgo(start,end,moveLimit,gameGUI.board,character.canFly)
-        return 'hi'
+    def move(self,character,target,moveAmount):
+        start = 0
+        path = Pathing.AStarAlgo(start,target,moveAmount,gameGUI.board,character.canFly)
+        print(path)
 
     # Decides what attack to launch at enemy target, rolls for damage, can miss,critically miss,hit,critically hit
     def attack(self,character,enemyTarget):
@@ -101,7 +101,7 @@ class player():
         lowDistTargetHealth = 15
         start = letters[pos[0]] + str(pos[1]+1)
         allCharPositions = 0
-        
+
         chosenEnemy = -1
         chosenEnemyHealth = 15
         targetLOSStatus = False
@@ -133,27 +133,29 @@ class player():
         if chosenEnemy == -1:
             chosenEnemy = lowDistTarget
 
-        self.characterActions(char,distance,targetLOSStatus,targetInRangeStatus)
+        return self.characterActions(char,distance,targetLOSStatus,targetInRangeStatus),chosenEnemy
 
     # Decides if a character should even move or attack this turn
     def characterActions(self,character,dist,inLOS,inRange):
         decisions = {'move' : [False,0], 'attack':[False,'Close'],'special':False,'cost':'free'}
 
         #determines whether it can use Running Shot
-        if character['speedAbility'] == 'Running Shot' and ((dist - ceil(character['speed']/2)) < character['range']):
+        if character['speedAbility'] == 'Running Shot' and ((dist - ceil(character['speed']/2)) < character['range'])\
+                and character.actionTokens < 2:
             decisions['special'] = True
             decisions['move'] = [True,ceil(character['speed']/2)]
             decisions['attack'] = [True,'Range']
             decisions['cost'] = 'cost'
 
         #Determines whether it can use charge
-        elif dist < ceil(character['speed']/2) and (character['speedAbility'] == 'Charge') and (character['damageAbility'] == "Close Combat Expert"):
+        elif dist < ceil(character['speed']/2) and (character['speedAbility'] == 'Charge') \
+                and (character['damageAbility'] == "Close Combat Expert") and character.actionTokens < 2:
             decisions['special'] = True
             decisions['move'] = [True, ceil(character['speed'] / 2)]
             decisions['attack'] = [True,'Close']
             decisions['cost'] = 'cost'
         #determines whether it can attack in ranged
-        elif dist < character['range'] and dist > 1 and inLOS == True:
+        elif dist < character['range'] and dist > 1 and inLOS == True and character.actionTokens < 2:
             decisions['attack'] = [True, 'Range']
             decisions['cost'] = 'cost'
         #determines whether it should sidestep to attack in range
@@ -162,11 +164,11 @@ class player():
             decisions['move'] = [True,2]
             decisions['cost'] = 'free'
         #determines whether it should attack in melee
-        elif dist == 1:
+        elif dist == 1 and character.actionTokens < 2:
             decisions['attack'] = [True, 'Close']
             decisions['cost'] = 'cost'
         #moves because it can't do any of the above
-        else:
+        elif character.actionTokens < 2 and dist > 1:
             decisions['move'] = [True,character['speed']]
             decisions['cost'] = 'cost'
         return decisions
@@ -209,10 +211,8 @@ class player():
             currentX = currentX + (xDelta / iterationsPerX)
             currentY = currentY + (yDelta / iterationsPerX)
 
-            print("currentX: " + str(currentX) + " currentY: " + str(currentY))
 
             currNode = board.graph[int(currentX)][int(currentY)]
-            print("currNode: " + str(currNode.name))
 
             xCorner = (abs(floor(currentX) - currentX) < .01) or (abs(ceil(currentX) - currentX) < .01)
             yCorner = (abs(floor(currentY) - currentY) < .01) or (abs(ceil(currentY) - currentY) < .01)
@@ -220,19 +220,16 @@ class player():
             # if a wall obstructs LOS, return False
             if ((lastNode.name != currNode.name) and (lastNode not in currNode.adjacentTo) and (
             not (xCorner or yCorner))):
-                print(start + " LOS to " + end + ": False")
                 return False
 
             # if a character obstructs LOS, return False
             if ((currNode.name != start) and (currNode.name != end) and (
                     currNode.name.upper() not in characterPositions)):
-                print(start + " LOS to " + end + ": False")
                 return False
 
             lastNode = currNode
 
             # if no conflict is found in the entiriety of the loops, LOS is true
-        print(start + " LOS to " + end + ": True")
         return True
 
 
@@ -244,8 +241,7 @@ def admitDefeat(loser,points):
           'Player ' + str(loser.enemyIndex) + 'has won the game with 300 points')
 
 
-
-# roll dice
+# roll dice                : NOT USED
 def rollDice(start,end):
     return randint(start,end)
 
@@ -253,8 +249,8 @@ def rollDice(start,end):
 def main():
     player1 = player(1)
     player2 = player(2)
-    players = [player1,player2]
-    currentPlayer = 1
+    global players
+    players = [player1, player2]
 
 
 def nextTurn(player1Char,player2Char,Board):
