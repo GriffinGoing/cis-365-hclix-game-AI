@@ -1,9 +1,12 @@
 import gameGUI
 import Pathing
 from random import randint
+from math import sqrt,pow,floor,ceil
 
 global currentPlayer
 global players
+
+letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'N', 'P']
 
 class player():
     def __init__(self,position):
@@ -15,11 +18,11 @@ class player():
         self.enemyIndex = 2
 
 
-    def playerCharactersMove(self):
+    def playerCharactersMove(self,graph):
         numberDead = 0
         self.actionTotal = 300
-        for i in self.characters:
 
+        for i in self.characters:
             #here to show if the character has taken a costed action this move
             costedAction = False
 
@@ -39,12 +42,11 @@ class player():
             if i.actionToken == 2:
                 next(self.characters)
 
-            #characters x,y position             PLACEHOLDER VALUE
-            positionx,positiony = 0
+            #characters x,y position
+            pos = [letters.index[i.position[0]],int(i.position[1])-1]
 
-
-            enemyTarget = self.chooseTarget(i)
-            self.move(i,positionx,enemyTarget)
+            enemyTarget = self.chooseTarget(i,graph)
+            self.move(i,pos,enemyTarget)
             self.attack(i,enemyTarget)
 
             #if character makes a costed action his action tokens go up by one
@@ -61,7 +63,7 @@ class player():
 
     # move and attack are in player class because only the player should move their pieces
     def move(self,character,start,end):
-        moveLimit = self.characters[character].speedVal
+        moveLimit = self.characters[character].speedVal + 1
 
         canGetThere,moves = Pathing.AStarAlgo(start,end,moveLimit,gameGUI.board,character.canFly)
         return 'hi'
@@ -91,24 +93,147 @@ class player():
             return True
         else:
             return False
-    # Decides which target a character should move towards and attack
-    def chooseTarget(self,character):
 
-        health = 0
-        distance = 0
-        return 'hi'
+    # Decides which target a character should move towards and attack
+    # Priority is : 1=LOS and in range, 2=lowest range that has lowest health
+    def chooseTarget(self,pos,char,graph):
+        lowDistTarget = 0
+        lowDistTargetHealth = 15
+        start = letters[pos[0]] + str(pos[1]+1)
+        allCharPositions = 0
+        
+        chosenEnemy = -1
+        chosenEnemyHealth = 15
+        targetLOSStatus = False
+        targetInRangeStatus = False
+        distance = 100
+        for i in players[1]:
+            inRange = False
+            enemyPos = [letters.index[i.position[0]],int(i.position[1])-1]
+            #gets hypotenuse distance between current character and the enemy character
+            defDistance = floor(sqrt(pow(abs(pos[0]-enemyPos[0]), 2) + pow(abs(pos[1]-enemyPos[1])), 2))
+            if defDistance <= char['range']:
+                inRange = True
+            inLOS = self.lineOfSight(start,i.position,graph,allCharPositions)
+
+            #if someone is in range, has los then they are the target
+            if inRange == True and inLOS == True and i.click < chosenEnemyHealth:
+                chosenEnemy = i
+                chosenEnemyHealth = i.click
+                targetLOSStatus = True
+                targetInRangeStatus = True
+
+            elif defDistance <= distance and i.click < lowDistTargetHealth and chosenEnemy == -1:
+                distance = defDistance
+                lowDistTargetHealth = i.click
+                lowDistTarget = i
+                targetInRangeStatus = True
+
+
+        if chosenEnemy == -1:
+            chosenEnemy = lowDistTarget
+
+        self.characterActions(char,distance,targetLOSStatus,targetInRangeStatus)
 
     # Decides if a character should even move or attack this turn
-    def characterActions(self,character):
-        decisions = {'move' : False, 'attack':False,}
+    def characterActions(self,character,dist,inLOS,inRange):
+        decisions = {'move' : [False,0], 'attack':[False,'Close'],'special':False,'cost':'free'}
+
+        #determines whether it can use Running Shot
+        if character['speedAbility'] == 'Running Shot' and ((dist - ceil(character['speed']/2)) < character['range']):
+            decisions['special'] = True
+            decisions['move'] = [True,ceil(character['speed']/2)]
+            decisions['attack'] = [True,'Range']
+            decisions['cost'] = 'cost'
+
+        #Determines whether it can use charge
+        elif dist < ceil(character['speed']/2) and (character['speedAbility'] == 'Charge') and (character['damageAbility'] == "Close Combat Expert"):
+            decisions['special'] = True
+            decisions['move'] = [True, ceil(character['speed'] / 2)]
+            decisions['attack'] = [True,'Close']
+            decisions['cost'] = 'cost'
+        #determines whether it can attack in ranged
+        elif dist < character['range'] and dist > 1 and inLOS == True:
+            decisions['attack'] = [True, 'Range']
+            decisions['cost'] = 'cost'
+        #determines whether it should sidestep to attack in range
+        elif dist == 1 and character['speedAbility'] == 'Sidestep' and character['damageAbility'] == 'Range Combat Expert':
+            decisions['special'] = True
+            decisions['move'] = [True,2]
+            decisions['cost'] = 'free'
+        #determines whether it should attack in melee
+        elif dist == 1:
+            decisions['attack'] = [True, 'Close']
+            decisions['cost'] = 'cost'
+        #moves because it can't do any of the above
+        else:
+            decisions['move'] = [True,character['speed']]
+            decisions['cost'] = 'cost'
         return decisions
 
     #determines if character is within LOS of enemy to begin attack
-    def lineOfSight(self,character,targetx,targety):
+    def lineOfSight(self,start,end,board,characterPositions):
+        Lletters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p']
 
-        #enemy is in an adjacent tile, LOS = True
-        #else if character
-        return 'hi'
+        start = start.lower()
+        end = end.lower()
+
+        # parse x and y from start and end
+        startX = Lletters.index(start[0])
+        startY = int(start[1:]) - 1
+        endX = Lletters.index(end[0])
+        endY = int(end[1:]) - 1
+
+        # calculate the implicit slope of the direct cartesian line from start to end:
+        xDelta = endX - startX
+        yDelta = endY - startY
+        # slope = yDelta/xDelta
+
+        # start from center of "start" within theoretical coordinate coordinate (IE, x.5, y.5)
+        currentX = startX + .5
+        currentY = startY + .5
+
+        # every iteration, add slope * 1/50 per 1/50th of x change , use FLOOR to grab integer to find the current location,
+        # and look for adjacency from last location to this, or that the box is the same as the last
+        # IE has not moved
+
+        # the number of times to iterate per single X. For example, for a value of
+        # 50, I will perform 50 iterations from the span of A1 to B1 and check LOS at each
+        # point in between
+        iterationsPerX = 50
+
+        lastNode = board.graph[int(currentX)][int(currentY)]
+        currNode = board.graph[int(currentX)][int(currentY)]
+        while (currNode.name != end):
+            # increment 'pointer' position
+            currentX = currentX + (xDelta / iterationsPerX)
+            currentY = currentY + (yDelta / iterationsPerX)
+
+            print("currentX: " + str(currentX) + " currentY: " + str(currentY))
+
+            currNode = board.graph[int(currentX)][int(currentY)]
+            print("currNode: " + str(currNode.name))
+
+            xCorner = (abs(floor(currentX) - currentX) < .01) or (abs(ceil(currentX) - currentX) < .01)
+            yCorner = (abs(floor(currentY) - currentY) < .01) or (abs(ceil(currentY) - currentY) < .01)
+
+            # if a wall obstructs LOS, return False
+            if ((lastNode.name != currNode.name) and (lastNode not in currNode.adjacentTo) and (
+            not (xCorner or yCorner))):
+                print(start + " LOS to " + end + ": False")
+                return False
+
+            # if a character obstructs LOS, return False
+            if ((currNode.name != start) and (currNode.name != end) and (
+                    currNode.name.upper() not in characterPositions)):
+                print(start + " LOS to " + end + ": False")
+                return False
+
+            lastNode = currNode
+
+            # if no conflict is found in the entiriety of the loops, LOS is true
+        print(start + " LOS to " + end + ": True")
+        return True
 
 
 
@@ -126,14 +251,17 @@ def rollDice(start,end):
 
 # creates
 def main():
-    GUI = gameGUI.main()
     player1 = player(1)
     player2 = player(2)
     players = [player1,player2]
     currentPlayer = 1
 
-def nextTurn():
-    players[0].playerCharactersMove
+
+def nextTurn(player1Char,player2Char,Board):
+    players[0].characters = player1Char
+    players[1].characters = player2Char
+    graph = Board
+    players[0].playerCharactersMove(graph)
 
 
 if __name__ == '__main__':
