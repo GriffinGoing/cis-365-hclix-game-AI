@@ -6,7 +6,7 @@ import board
 '''
 
 '''
-def hasLineOfSight(start, end, board, characterPositions):
+def hasLineOfSight(start, end, board):
     letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p']
 
     start = start.lower()
@@ -55,11 +55,14 @@ def hasLineOfSight(start, end, board, characterPositions):
 
         # if a wall obstructs LOS, return False
         if ((lastNode.name != currNode.name) and (lastNode not in currNode.adjacentTo) and (not(xCorner or yCorner))):
+            print(lastNode.name != currNode.name)
+            print(lastNode not in currNode.adjacentTo)
+            print(not(xCorner or yCorner))
             print(start + " LOS to " + end + ": False")
             return False
 
         # if a character obstructs LOS, return False
-        if ((currNode.name != start) and (currNode.name != end) and (currNode.name.upper() not in characterPositions))
+        if ((currNode.name != start) and (currNode.name != end)):
             print(start + " LOS to " + end + ": False")
             return False
 
@@ -73,5 +76,5 @@ def hasLineOfSight(start, end, board, characterPositions):
 
 board.main()
 
-hasLineOfSight("d10", "h14", board, characters)
+hasLineOfSight("a1", "d1", board)
 

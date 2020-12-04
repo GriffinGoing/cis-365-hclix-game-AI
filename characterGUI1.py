@@ -6,6 +6,41 @@ from PIL import Image, ImageTk
 Character attributes/abilities/image/etc
 '''
 
+
+
+'''
+non AI = too lazy to implement so ai doesnt do it yet
+
+cost = a costed action =  1 action token
+free = did not cost an action token
+inherant = automatically modifies
+
+move2 = moves2
+
+halfMove_Close = can move up to half of characters original movement then attack in closes range
+halfMove_Range = can move up to half of characters original movement then attack in ranged
+
+
+push-0 = Reduce pushing damage recieved to 0
+
+atk2,dmg2,atkdmg1 = choose if you want attack + 2, damage + 2, attack and damage + 1
+dmg-2 = reduced incoming damage by 2
+dmg-1 = reduce incoming damage by 1
+CloseKnock = can knock a character back in close range
+
+AOE2 = does aoe damage around target for 2 damage
+
+1d6 = rolls a 1d6 dice
+5/6=0 = if rolled a 5 or 6 then damage recieved is 0
+
+'''
+abilities = {"Charge":['cost','halfMove_Close'],  "Sidestep":['free','move2'],  "Combat Reflexes":['inherant',"non AI"],
+             "Willpower":["inherant",'push-0'],"Leadership":["cost"],"Close Combat Expert":["inherant","close","atk2,dmg2,atkdmg1"],
+             "Running Shot":['cost','halfMove_Range'],"Super Strength":['CloseKnock'],
+             "Energy Explosion":["cost",'AOE2','1d6'],"Special":[],"Impervious":['dmg-2','1d6','5/6=0',"non AI"],
+             "Invulnerability":['dmg-2'],"Toughness":['dmg-1'],"Ranged Combat Expert":['inherant','range',"atk2,dmg2,atkdmg1"]}
+
+
 captAmericaTemplate = {
     "name": "Captain America",
     "image": {
@@ -137,6 +172,7 @@ ironManTemplate = {
         1: "./images/p1IronMan.jpg",
         2: "./images/p2IronMan.jpg",
     },
+
     "position": "A1",
     "keywords": ["Avengers", "Stark Industries", "Armor"],
     "canFly": True,
@@ -208,7 +244,6 @@ class characterGUI():
 
         # load proper image
         self.character['image'] = self.character['image'][playerNum]
-
         # add 'current' attribute keys and values to character
         self.character['speed'] = self.character['speedVals'][1]
         self.character['attack'] = self.character['attackVals'][1]
@@ -233,6 +268,9 @@ class characterGUI():
         self.posLabel = Label(self.moveFrame, text="Position:")
         self.posVal = Label(self.moveFrame, text=self.character['position'])
         self.moveButton = Button(self.moveFrame, text="Move")
+        
+        # move button
+        self.moveButton = Button(self.charLabelFrame, text="Move")
 
         # frame for clicker
         self.clickerFrame = Frame(self.charLabelFrame)
@@ -244,7 +282,7 @@ class characterGUI():
         self.attrFrame.grid_propagate(False)
 
         # load and size char image
-        self.character['thumbnail'] = ImageTk.PhotoImage(Image.open(self.character['image']).resize((25, 25)), Image.ANTIALIAS)
+        self.character['thumbnail'] = ImageTk.PhotoImage(Image.open(self.character['image']).resize((58, 48)), Image.ANTIALIAS)
         self.charImg = ImageTk.PhotoImage(Image.open(self.character['image']).resize((100, 100)), Image.ANTIALIAS)
         self.image = Label(self.picFrame, image=self.charImg)
 
@@ -326,13 +364,9 @@ class characterGUI():
         self.specialLabel.grid(row=5, column=0)
         self.specialVal.grid(row=5, column=1)
 
-        self.posLabel.grid(row=0, column=0)
-        self.posVal.grid(row=0, column=1)
-        self.moveButton.grid(row=0, column=2)
-
         self.picFrame.pack()
         self.traitVal.pack()
-        self.moveFrame.pack()
+        self.moveButton.pack()
         self.clickerFrame.pack()
         self.attrFrame.pack()
         #self.attrFrame.grid_propagate(0)
@@ -358,15 +392,13 @@ class characterGUI():
         self.character['defenseAbility'] = self.character['defenseAbilityVals'][int(val)]
         self.character['damageAbility'] = self.character['damageAbilityVals'][int(val)]
 
-
+        self.character['click'] = int(val)
         # update visual speeds
         self.speedVal.config(text=self.character['speed'])
         self.attackVal.config(text=self.character['attack'])
         self.rangeVal.config(text=self.character['range'])
         self.defenseVal.config(text=self.character['defense'])
         self.damageVal.config(text=self.character['damage'])
-
-        self.character['click'] = int(val)
 
         self.speedAbilityVal.config(text=self.character['speedAbility'])
         self.attackAbilityVal.config(text=self.character['attackAbility'])
@@ -378,8 +410,4 @@ class characterGUI():
         return self.character
 
     def setPosition(self, newPosition):
-        self.character['position'] = newPosition.upper()
-        self.posVal.config(text=self.character['position'])
-
-
-
+        self.character['position'] = newPosition
