@@ -1,4 +1,6 @@
 from tkinter import *
+from tkinter import ttk
+from tkinter import messagebox
 import tkinter.font as tkFont
 from tkinter import simpledialog
 sys.path.append('..')
@@ -11,8 +13,6 @@ def requireVersion():
     if (sys.version_info[0] != 3):
         print("This script requires Python version 3.x")
         sys.exit(1)
-
-board = board.main()
 
 class boardButton(Button):
     def __init__(self):
@@ -61,6 +61,8 @@ class boardGUI:
                     newButton.config(bg='blue')
                 elif (node.terrain == "start"):
                     newButton.config(bg='tomato')
+                elif (node.terrain == "block"):
+                    newButton.config(bg='brown')
 
                 #newButton.bind("<Enter>", onHover)
                 #newButton.bind("<Leave>", exitHover)
@@ -88,45 +90,47 @@ class boardGUI:
                     canvas.create_line(startX,startY,startX,startY+nodeHeight,width=6)
 
 
-def onHover(event):
-    widget = event.widget
-    text = str(widget.cget('text')).lower()
-    node = board[ord(text[0]) - 97][int(text[1:len(text)]) - 1]
-    for i in my_gui.buttons:
-        iText = str(i.cget('text')).lower()
-        coordx = ord(iText[0]) - 97
-        coordy = int(iText[1:len(text)]) - 1
-        tempNode = board[coordx][coordy]
-        if node.adjacentTo.count(tempNode) == 1:
-            i.config(bg='pale green')
-    widget.configure(bg='green')
+    def removeWalls(self, nodeEntry, directionEntry, canvas, board):
+        letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p']
 
-def exitHover(event):
-    widget = event.widget
-    text = str(widget.cget('text')).lower()
-    node = board[ord(text[0]) - 97][int(text[1:len(text)]) - 1]
-    for i in my_gui.buttons:
-        iText = str(i.cget('text')).lower()
-        coordx = ord(iText[0]) - 97
-        coordy = int(iText[1:len(text)]) - 1
-        tempNode = board[coordx][coordy]
-        if node.adjacentTo.count(tempNode) == 1:
-            if (tempNode.terrain == "water"):
-                i.config(bg='blue')
-            elif (tempNode.terrain == "start"):
-                i.config(bg='tomato')
-            else:
-                i.config(bg= 'white')
-    if (node.terrain == "water"):
-        widget.config(bg='blue')
-    elif (node.terrain == "start"):
-        widget.config(bg='tomato')
-    else:
-        i.config(bg='white')
+        node = nodeEntry.get().lower()
+        direction = directionEntry.get().lower()
+
+        prompt = "Remove " + direction.upper() + " wall at " + node.upper() + " ?"
+
+        answer = messagebox.askyesno("Remove Wall?", prompt)
+
+        if (answer == False):
+            return
+
+        #print(node)
+        #print(direction)
+
+        col = letters.index(node[0])
+        row = int(node[1:]) - 1
+
+        #print(row, col)
+        canvas.update()
+        board.removeWall(col, row, direction)
+        nodeHeight = canvas.winfo_height() / 16
+        nodeWidth = canvas.winfo_width() / 16
+        startX = col * nodeWidth
+        startY = row * nodeHeight
+        node = board.graph[col][row]
+        if node.walls[directions.NORTH] == False:
+            canvas.create_line(startX, startY, startX + nodeWidth, startY, width=6, fill='white')
+        if node.walls[directions.EAST] == False:
+            canvas.create_line(startX + nodeWidth, startY, startX + nodeWidth, startY + nodeHeight, width=6, fill='white')
+        if node.walls[directions.SOUTH] == False:
+            canvas.create_line(startX, startY + nodeHeight, startX + nodeWidth, startY + nodeHeight, width=6, fill='white')
+        if node.walls[directions.WEST] == False:
+            canvas.create_line(startX, startY, startX, startY + nodeHeight, width=6, fill='white')
+
+
+
 
 def moveCharacter(character, boardGui):
 
-    letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p']
 
     # update actual char position
     charName = character.getCharacter()['name']
@@ -146,12 +150,11 @@ def moveCharacter(character, boardGui):
     # set char position
     character.setPosition(newPosition)
 
-
-    return
-
 def main():
 
     root = Tk()
+
+    board.main()
 
     #root.minsize(1600, 1300)
 
@@ -159,16 +162,36 @@ def main():
     root.option_add("*Font", font)
     root.title("HeroClix AI Interface")
 
-    canvas = Canvas(root, bg='white', height=300, width=300) # background or board
+    boardFrame = Frame(root)
+
+    aiButtonFrame = Frame(boardFrame)
+
+    nextMoveButton = Button(aiButtonFrame, text="Get Next Move", width=15, height=4, bg="lawn green")
+    nextMoveButton.grid(row=0, column=0)
+
+    nodeLabel = Label(aiButtonFrame, text="Node:")
+    nodeLabel.grid(row=0, column=1)
+
+    nodeEntry = Entry(aiButtonFrame)
+    nodeEntry.grid(row=0, column=2)
+
+    directionLabel = Label(aiButtonFrame, text="Direction:")
+    directionLabel.grid(row=0, column=3)
+
+    directionEntry = ttk.Combobox(aiButtonFrame, values=("north", "east", "south", "west"))
+    directionEntry.grid(row=0,column=4)
+
+    destroyWallButton = Button(aiButtonFrame, text="Destroy Wall", width=15, height=4, bg="orange")
+    destroyWallButton.grid(row=0, column=5)
+
+    canvas = Canvas(boardFrame, bg='white', height=300, width=300) # background or board
     player1LabelFrame = LabelFrame(root, text="Player 1", width=300)
     player2LabelFrame = LabelFrame(root, text="Player 2", width=300)
     player1LabelFrame.grid_propagate(0)
 
-    my_gui = boardGUI(canvas, board)
+    my_gui = boardGUI(canvas, board.graph)
 
-    # testing
-    testp1Label = Label(player1LabelFrame, text="IM A TEST SHIT THING")
-    testp2Label = Label(player2LabelFrame, text="IM A TEST SHIT THING")
+    destroyWallButton.config(command= lambda nodeEntry=nodeEntry, directionEntry=directionEntry, canvas=canvas, board=board : my_gui.removeWalls(nodeEntry, directionEntry, canvas, board))
 
     p1CaptAmerica = characterGUI(player1LabelFrame, 1, "Captain America",)
     p1CaptAmerica.moveButton.config(command=lambda character=p1CaptAmerica, boardGui=my_gui : moveCharacter(character, boardGui))
@@ -180,7 +203,7 @@ def main():
     p1IronMan.moveButton.config(command=lambda character=p1IronMan, boardGui=my_gui : moveCharacter(character, boardGui))
 
     player1Chars = {
-        "Captain America": p1CaptAmerica.getCharacter,
+        "Captain America": p1CaptAmerica,
         "Thor": p1Thor,
         "Iron Man": p1IronMan
     }
@@ -204,10 +227,12 @@ def main():
     #testp1Label.pack()
     player2LabelFrame.grid(row=0,column=2)
     #testp2Label.pack()
-    canvas.grid(row=0, column=1)
-    my_gui.addWalls(board, canvas)
+    aiButtonFrame.pack()
+    canvas.pack()
+    boardFrame.grid(row=0, column=1)
+    my_gui.addWalls(board.graph, canvas)
 
-    #print(root.winfo_width(), root.winfo_height())
+    #nextMoveButton.config(command = lambda p1Chars=player1Chars, p2Chars=player2CHars, board=board : game.nextTurn(p1Chars, p2Chars, board))
 
     root.mainloop()
     #player1Window.mainloop()
