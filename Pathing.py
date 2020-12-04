@@ -1,37 +1,33 @@
 import board
-
-
 #making the heroclix board in pathfinding
-board = board.main()
-
-
 #start and end parameters will be node id's
 #Ex. start = a1 , end = p13
-def AStarAlgo(start,end):
 
-    startNode =board[ord(start[0]) - 97][int(start[1:len(start)])-1]
+def AStarAlgo(start,end,moveLimit,board,fly):
+    startNode = board[ord(start[0]) - 97][int(start[1:len(start)])-1]
     endNode = board[ord(end[0]) - 97][int(end[1:len(end)])-1]
-
     #Q is a queue
     Q = []
     Q.append(startNode)
-
     Path = []
 
     while len(Q) > 0:
-        G = Q.pop(0)
+        if len(Path) >= moveLimit:
+            return Path
+        G = Q.pop()
         if G == endNode:
             Path.append(G)
             return Path
         else:
             Path.append(G)
             min = 500
-            minNode = 0;
+            minNode = 0
             for node in G.adjacentTo:
                 nodeX = abs((ord(node.name[0]) - 97) - (ord(end[0]) - 97)) * 1.5
                 nodeY = abs((int(node.name[1:len(node.name)])-1) - (int(end[1:len(end)])-1)) * 1.5
                 distance = (nodeX) + (nodeY)
-                futureNode = nextNodeWeight(node,endNode.name)
+                futureNode = nextNodeWeight(node,endNode.name,board)
+
                 weight = distance - (len(node.adjacentTo)/2)
 
                 if futureNode > weight:
@@ -44,12 +40,15 @@ def AStarAlgo(start,end):
                     if Path.count(node) == 0:
                         minNode = node
                         min = weight
+            #if G.terrain != 'water' and node.terrain == 'water':
+            #    return Path
+            if node.terrain == 'water' and fly == False:
+                moveLimit -= 1
             if(minNode != 0):
                 Q.append(minNode)
+    return Path
 
-    return False
-
-def nextNodeWeight(rootNode, end):
+def nextNodeWeight(rootNode, end,board):
     weight = 100
     endNode = board[ord(end[0]) - 97][int(end[1:len(end)]) - 1]
 
@@ -69,59 +68,3 @@ def nextNodeWeight(rootNode, end):
                 min = weight
     return weight
 
-
-'''
-Insert A star algorithm testing here
-
-To add test cases do:
-    path = AStarAlgo(StartNode.Name,EndNode.name)
-    if path != False:
-        print(path)
-    else:
-        print('your algo sucks or your input sucks')
-'''
-
-path = AStarAlgo('a1','p16')
-print()
-print()
-print('Path =       A1 to P16')
-if path != False:
-    count = 0
-    for i in path:
-        print(i.name,end='->')
-        count += 1
-        if count > 10:
-            print()
-            count = 0
-else:
-    print('your algo sucks or your input sucks')
-
-path = AStarAlgo('a9','p9')
-print()
-print()
-print('Path =       A9 to P9')
-if path != False:
-    count = 0
-    for i in path:
-        print(i.name,end='->')
-        count += 1
-        if count > 10:
-            print()
-            count = 0
-else:
-    print('your algo sucks or your input sucks')
-
-print()
-print()
-path = AStarAlgo('c3','j10')
-print('Path =       C3 to J10')
-if path != False:
-    count = 0
-    for i in path:
-        print(i.name,end='->')
-        count += 1
-        if count > 10:
-            print()
-            count = 0
-else:
-    print('your algo sucks or your input sucks')
